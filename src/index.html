@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br" ng-app="app">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atendimento Online</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script>
+    angular.module('app', [])
+      .controller('MensagemController', ['$scope', function($scope) {
+        $scope.mensagens = [
+          {
+            titulo: 'Atendente diz:',
+            texto: 'Olá! Como vai?',
+            tipo: 'atendente'
+          },
+          {
+            titulo: 'Atendente diz:',
+            texto: 'Poderia ajudar em algo?',
+            tipo: 'atendente'
+          }
+        ];
+
+        $scope.envioMensagem = function() {
+          if ($scope.textoDigitado && $scope.textoDigitado.trim() !== '') {
+            $scope.mensagens.push({
+              titulo: 'Você diz:',
+              texto: $scope.textoDigitado,
+              tipo: 'cliente'
+            });
+            $scope.textoDigitado = '';
+
+            setTimeout(() => {
+              var mensagensDiv = document.querySelector('.mensagens');
+              mensagensDiv.scrollTop = mensagensDiv.scrollHeight;
+            }, 0);
+          }
+        };
+
+        $scope.keyPress = function(event) {
+          if(event.key === 'Enter') {
+            event.preventDefault();
+            $scope.envioMensagem();
+          }
+        };
+      }]);
+  </script>
+</head>
+<body ng-controller="MensagemController">
+  <section class="chat-container">
+    <header class="chat-header">
+      <h1>Atendimento Online</h1>
+    </header>
+    <div class="mensagens" role="log" aria-live="polite">
+      <div class="mensagem" ng-repeat="msg in mensagens track by $index" ng-class="msg.tipo">
+        <strong>{{msg.titulo}}</strong>
+        <p>{{msg.texto}}</p>
+      </div>
+    </div>
+    <form ng-submit="$event.preventDefault()" class="chat-input-area">
+      <input
+        id="entrada"
+        type="text"
+        ng-model="textoDigitado"
+        ng-keydown="keyPress($event)"
+        placeholder="Digite uma mensagem"
+        autocomplete="off"
+      />
+      <button type="button" ng-click="envioMensagem()">enviar</button>
+    </form>
+  </section>
+</body>
+</html>
